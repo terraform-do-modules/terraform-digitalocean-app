@@ -82,11 +82,15 @@ Here are some examples of how you can use this module in your inventory structur
 
 ## Inputs
 
-No input.
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| label\_order | Label order, e.g. `name`,`environment`. | `list(string)` | <pre>[<br>  "name",<br>  "environment"<br>]</pre> | no |
 
 ## Outputs
 
-No output.
+| Name | Description |
+|------|-------------|
+| label\_order | Label order. |
 
 
 
