@@ -4,20 +4,20 @@
 
 
 <h1 align="center">
-    Terraform Module Template
+    Terraform Digitalocean App
 </h1>
 
 <p align="center" style="font-size: 1.2rem;"> 
-    Terraform module template to create new modules using this as baseline
+    Terraform module to create Digitalocean app service resource on Digitalocean.
      </p>
 
 <p align="center">
 
-<a href="https://github.com/clouddrove/terraform-module-template/releases/latest">
-  <img src="https://img.shields.io/github/release/clouddrove/terraform-module-template.svg" alt="Latest Release">
+<a href="https://github.com/terraform-do-modules/terraform-digitalocean-app/releases/latest">
+  <img src="https://img.shields.io/github/release/terraform-do-modules/terraform-digitalocean-app.svg" alt="Latest Release">
 </a>
-<a href="">
-  <img src="https://github.com/clouddrove/terraform-module-template/actions/workflows/tfsec.yml/badge.svg" alt="tfsec">
+<a href="https://github.com/terraform-do-modules/terraform-digitalocean-app/actions/workflows/tfsec.yml">
+  <img src="https://github.com/terraform-do-modules/terraform-digitalocean-app/actions/workflows/tfsec.yml/badge.svg" alt="tfsec">
 </a>
 <a href="LICENSE.md">
   <img src="https://img.shields.io/badge/License-APACHE-blue.svg" alt="Licence">
@@ -27,13 +27,13 @@
 </p>
 <p align="center">
 
-<a href='https://facebook.com/sharer/sharer.php?u=https://github.com/clouddrove/terraform-module-template'>
+<a href='https://facebook.com/sharer/sharer.php?u=https://github.com/terraform-do-modules/terraform-digitalocean-app'>
   <img title="Share on Facebook" src="https://user-images.githubusercontent.com/50652676/62817743-4f64cb80-bb59-11e9-90c7-b057252ded50.png" />
 </a>
-<a href='https://www.linkedin.com/shareArticle?mini=true&title=Terraform+Module+Template&url=https://github.com/clouddrove/terraform-module-template'>
+<a href='https://www.linkedin.com/shareArticle?mini=true&title=Terraform+Digitalocean+App&url=https://github.com/terraform-do-modules/terraform-digitalocean-app'>
   <img title="Share on LinkedIn" src="https://user-images.githubusercontent.com/50652676/62817742-4e339e80-bb59-11e9-87b9-a1f68cae1049.png" />
 </a>
-<a href='https://twitter.com/intent/tweet/?text=Terraform+Module+Template&url=https://github.com/clouddrove/terraform-module-template'>
+<a href='https://twitter.com/intent/tweet/?text=Terraform+Digitalocean+App&url=https://github.com/terraform-do-modules/terraform-digitalocean-app'>
   <img title="Share on Twitter" src="https://user-images.githubusercontent.com/50652676/62817740-4c69db00-bb59-11e9-8a79-3580fbbf6d5c.png" />
 </a>
 
@@ -53,11 +53,7 @@ We have [*fifty plus terraform modules*][terraform_modules]. A few of them are c
 ## Prerequisites
 
 This module has a few dependencies: 
-
-- [Terraform 1.x.x](https://learn.hashicorp.com/terraform/getting-started/install.html)
-- [Go](https://golang.org/doc/install)
-- [github.com/stretchr/testify/assert](https://github.com/stretchr/testify)
-- [github.com/gruntwork-io/terratest/modules/terraform](https://github.com/gruntwork-io/terratest)
+- [Terraform 1.5.4](https://learn.hashicorp.com/terraform/getting-started/install.html)
 
 
 
@@ -68,11 +64,79 @@ This module has a few dependencies:
 ## Examples
 
 
-**IMPORTANT:** Since the `master` branch used in `source` varies based on new modifications, we suggest that you use the release versions [here](https://github.com/clouddrove/terraform-module-template/releases).
+**IMPORTANT:** Since the `master` branch used in `source` varies based on new modifications, we suggest that you use the release versions [here](https://github.com/terraform-do-modules/terraform-digitalocean-app/releases).
 
 
 Here are some examples of how you can use this module in your inventory structure:
+## basic example
 ```hcl
+module "domain" {
+  source          = "terraform-do-modules/app/digitalocean"
+  version         = "1.0.0"
+  spec = [{
+    name   = "test"
+    region = "nyc"
+
+    domain = {
+      name = "test.do.clouddrove.ca"
+      type = "PRIMARY"
+      zone = "do.clouddrove.ca"
+    }
+
+    service = {
+      name = "librqary-nginx"
+      image = {
+        registry_type  = "DOCKER_HUB"
+        registry       = "library"
+        repository     = "nginx"
+        tag            = "latest"
+        internal_ports = "80"
+        deploy_on_push = {
+          enabled = true
+        }
+      }
+      alert = {
+        rule     = "CPU_UTILIZATION"
+        value    = 50
+        operator = "GREATER_THAN"
+        window   = "FIVE_MINUTES"
+        disabled = false
+      }
+    }
+  }]
+}
+  ```
+## complete example
+```hcl
+module "domain" {
+  source          = "terraform-do-modules/app/digitalocean"
+  version         = "1.0.0"
+  spec = [{
+    name   = "test"
+    region = "nyc"
+    domain = {
+      name = "test.do.clouddrove.ca"
+      type = "PRIMARY"
+      zone = "do.clouddrove.ca"
+    }
+
+    static_site = {
+      name             = "blog"
+      build_command    = "bundle exec jekyll build -d ./public"
+      environment_slug = "hugo"
+      output_dir       = "/public"
+
+      git = {
+        repo_clone_url = "https://github.com/digitalocean/sample-jekyll.git"
+        branch         = "main"
+      }
+
+      routes = {
+        path = "/"
+      }
+    }
+  }]
+}
   ```
 
 
@@ -84,13 +148,19 @@ Here are some examples of how you can use this module in your inventory structur
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| label\_order | Label order, e.g. `name`,`environment`. | `list(string)` | <pre>[<br>  "name",<br>  "environment"<br>]</pre> | no |
+| enabled | Flag to control the resources creation. | `bool` | `true` | no |
+| spec | (Required) A DigitalOcean App spec describing the app. | `any` | `[]` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| label\_order | Label order. |
+| active\_deployment\_id | The ID the app's currently active deployment. |
+| created\_at | The date and time of when the app was created. |
+| default\_ingress | The default URL to access the app. |
+| id | ID of the app. |
+| live\_url | The live URL of the app. |
+| updated\_at | The date and time of when the app was last updated. |
 
 
 
@@ -106,9 +176,9 @@ You need to run the following command in the testing folder:
 
 
 ## Feedback 
-If you come accross a bug or have any feedback, please log it in our [issue tracker](https://github.com/clouddrove/terraform-module-template/issues), or feel free to drop us an email at [hello@clouddrove.com](mailto:hello@clouddrove.com).
+If you come accross a bug or have any feedback, please log it in our [issue tracker](https://github.com/terraform-do-modules/terraform-digitalocean-app/issues), or feel free to drop us an email at [hello@clouddrove.com](mailto:hello@clouddrove.com).
 
-If you have found it worth your time, go ahead and give us a ★ on [our GitHub](https://github.com/clouddrove/terraform-module-template)!
+If you have found it worth your time, go ahead and give us a ★ on [our GitHub](https://github.com/terraform-do-modules/terraform-digitalocean-app)!
 
 ## About us
 
