@@ -5,36 +5,106 @@
 #
 
 # Name of this project
-name : Terraform Module Template
+name : Terraform Digitalocean App
 
 # License of this project
 license: "APACHE"
 
 # Canonical GitHub repo
-github_repo: clouddrove/terraform-module-template
+github_repo: terraform-do-modules/terraform-digitalocean-app
 
 # Badges to display
 badges:
   - name: "Latest Release"
-    image: "https://img.shields.io/github/release/clouddrove/terraform-module-template.svg"
-    url: "https://github.com/clouddrove/terraform-module-template/releases/latest"
+    image: "https://img.shields.io/github/release/terraform-do-modules/terraform-digitalocean-app.svg"
+    url: "https://github.com/terraform-do-modules/terraform-digitalocean-app/releases/latest"
   - name: "tfsec"
-    image: "https://github.com/clouddrove/terraform-module-template/actions/workflows/tfsec.yml/badge.svg"
-    url: ""
+    image: "https://github.com/terraform-do-modules/terraform-digitalocean-app/actions/workflows/tfsec.yml/badge.svg"
+    url: "https://github.com/terraform-do-modules/terraform-digitalocean-app/actions/workflows/tfsec.yml"
   - name: "Licence"
     image: "https://img.shields.io/badge/License-APACHE-blue.svg"
     url: "LICENSE.md"
 
+prerequesties:
+  - name: Terraform 1.5.4
+    url: https://learn.hashicorp.com/terraform/getting-started/install.html
 #  description of this project
 description: |-
-  Terraform module template to create new modules using this as baseline
+  Terraform module to create Digitalocean app service resource on Digitalocean.
 # extra content
 include:
   - "terraform.md"
 
 # How to use this project
-# How to use this project
 usage: |-
   Here are some examples of how you can use this module in your inventory structure:
+  ## basic example
   ```hcl
+  module "domain" {
+    source          = "terraform-do-modules/app/digitalocean"
+    version         = "1.0.0"
+    spec = [{
+      name   = "test"
+      region = "nyc"
+
+      domain = {
+        name = "test.do.clouddrove.ca"
+        type = "PRIMARY"
+        zone = "do.clouddrove.ca"
+      }
+
+      service = {
+        name = "librqary-nginx"
+        image = {
+          registry_type  = "DOCKER_HUB"
+          registry       = "library"
+          repository     = "nginx"
+          tag            = "latest"
+          internal_ports = "80"
+          deploy_on_push = {
+            enabled = true
+          }
+        }
+        alert = {
+          rule     = "CPU_UTILIZATION"
+          value    = 50
+          operator = "GREATER_THAN"
+          window   = "FIVE_MINUTES"
+          disabled = false
+        }
+      }
+    }]
+  }
+    ```
+  ## complete example
+  ```hcl
+  module "domain" {
+    source          = "terraform-do-modules/app/digitalocean"
+    version         = "1.0.0"
+    spec = [{
+      name   = "test"
+      region = "nyc"
+      domain = {
+        name = "test.do.clouddrove.ca"
+        type = "PRIMARY"
+        zone = "do.clouddrove.ca"
+      }
+
+      static_site = {
+        name             = "blog"
+        build_command    = "bundle exec jekyll build -d ./public"
+        environment_slug = "hugo"
+        output_dir       = "/public"
+
+        git = {
+          repo_clone_url = "https://github.com/digitalocean/sample-jekyll.git"
+          branch         = "main"
+        }
+
+        routes = {
+          path = "/"
+        }
+      }
+    }]
+  }
     ```
