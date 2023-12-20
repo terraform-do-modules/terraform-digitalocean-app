@@ -27,6 +27,19 @@ resource "digitalocean_app" "this" {
           type  = env.value.type
         }
       }
+      dynamic "database" {
+        for_each = length(keys(lookup(spec.value, "database", {}))) == 0 ? [] : [lookup(spec.value, "database", {})]
+        content {
+           name     = database.value.name
+           engine = database.value.engine
+           version = database.value.version
+           production = database.value.production
+           cluster_name = database.value.cluster_name
+           db_name = database.value.db_name
+           db_user = database.value.db_user
+        }
+        
+      }
 
       dynamic "static_site" {
         for_each = length(keys(lookup(spec.value, "static_site", {}))) == 0 ? [] : [lookup(spec.value, "static_site", {})]
@@ -106,6 +119,7 @@ resource "digitalocean_app" "this" {
           }
         }
       }
+
 
       dynamic "service" {
         for_each = length(keys(lookup(spec.value, "service", {}))) == 0 ? [] : [lookup(spec.value, "service", {})]
