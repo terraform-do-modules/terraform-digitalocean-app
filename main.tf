@@ -33,7 +33,7 @@ resource "digitalocean_app" "this" {
            name     = database.value.name
            engine = lookup(domain.value, "engine", "MYSQL")
            version = lookup(domain.value, "version", null)
-           production = lookup(domain.value, "production", true)
+           production = lookup(domain.value, "production", false)
            cluster_name = lookup(domain.value, "cluster_name", null)
            db_name = lookup(domain.value, "db_name", null)
            db_user = lookup(domain.value, "db_user", null)
