@@ -31,12 +31,12 @@ resource "digitalocean_app" "this" {
         for_each = length(keys(lookup(spec.value, "database", {}))) == 0 ? [] : [lookup(spec.value, "database", {})]
         content {
            name     = database.value.name
-           engine = database.value.engine
-           version = database.value.version
-           production = database.value.production
-           cluster_name = database.value.cluster_name
-           db_name = database.value.db_name
-           db_user = database.value.db_user
+           engine = lookup(domain.value, "engine", "MYSQL")
+           version = lookup(domain.value, "version", null)
+           production = lookup(domain.value, "production", null)
+           cluster_name = lookup(domain.value, "cluster_name", null)
+           db_name = lookup(domain.value, "db_name", null)
+           db_user = lookup(domain.value, "db_user", null)
         }
         
       }
