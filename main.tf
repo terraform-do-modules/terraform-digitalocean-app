@@ -31,13 +31,75 @@ resource "digitalocean_app" "this" {
         for_each = length(keys(lookup(spec.value, "database", {}))) == 0 ? [] : [lookup(spec.value, "database", {})]
         content {
           name         = database.value.name
-          engine       = lookup(database.value, "engine", "MYSQL")
+          engine       = lookup(database.value, "engine", null)
           version      = lookup(database.value, "version", null)
           production   = lookup(database.value, "production", false)
           cluster_name = lookup(database.value, "cluster_name", null)
           db_name      = lookup(database.value, "db_name", null)
           db_user      = lookup(database.value, "db_user", null)
         }
+
+      }
+
+      dynamic "ingress" {
+        for_each = length(keys(lookup(spec.value, "ingress", {}))) == 0 ? [] : [lookup(spec.value, "ingress", {})]
+
+        content {
+          dynamic "rule" {
+            for_each = length(keys(lookup(ingress.value, "rule", {}))) == 0 ? [] : [lookup(ingress.value, "rule", {})]
+            content {
+              dynamic "component" {
+                for_each = length(keys(lookup(ingress.value, "component", {}))) == 0 ? [] : [lookup(ingress.value, "component", {})]
+                content {
+                  name                 = component.value.name
+                  preserve_path_prefix = component.value.preserve_path_prefix
+                  rewrite              = component.value.rewrite
+                }
+              }
+              dynamic "match" {
+                for_each = length(keys(lookup(ingress.value, "match", {}))) == 0 ? [] : [lookup(ingress.value, "match", {})]
+                content {
+                  dynamic "path" {
+                    for_each = length(keys(lookup(ingress.value, "path", {}))) == 0 ? [] : [lookup(ingress.value, "path", {})]
+                    content {
+                      prefix = path.value.prefix
+                    }
+                  }
+                }
+              }
+              dynamic "redirect" {
+                for_each = length(keys(lookup(ingress.value, "redirect", {}))) == 0 ? [] : [lookup(ingress.value, "redirect", {})]
+                content {
+                  uri           = redirect.value.uri
+                  authority     = redirect.value.authority
+                  port          = redirect.value.port
+                  scheme        = redirect.value.scheme
+                  redirect_code = redirect.value.redirect_code
+
+                }
+
+              }
+              dynamic "cors" {
+                for_each = length(keys(lookup(ingress.value, "cors", {}))) == 0 ? [] : [lookup(ingress.value, "cors", {})]
+                content {
+                  dynamic "allow_origins" {
+                    for_each = length(keys(lookup(ingress.value, "allow_origins", {}))) == 0 ? [] : [lookup(ingress.value, "allow_origins", {})]
+                    content {
+                      exact  = allow_origins.value.exact
+                      prefix = allow_origins.value.prefix
+                      regex  = allow_origins.value.regex
+                    }
+
+                  }
+                }
+              }
+
+
+            }
+
+          }
+        }
+
 
       }
 
@@ -117,10 +179,7 @@ resource "digitalocean_app" "this" {
               }
 
             }
-
           }
-
-
 
         }
       }
