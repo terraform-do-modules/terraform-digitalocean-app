@@ -30,13 +30,13 @@ resource "digitalocean_app" "this" {
       dynamic "database" {
         for_each = length(keys(lookup(spec.value, "database", {}))) == 0 ? [] : [lookup(spec.value, "database", {})]
         content {
-           name     = database.value.name
-           engine = lookup(database.value, "engine", "MYSQL")
-           version = lookup(database.value, "version", null)
-           production = lookup(database.value, "production", false)
-           cluster_name = lookup(database.value, "cluster_name", null)
-           db_name = lookup(database.value, "db_name", null)
-           db_user = lookup(database.value, "db_user", null)
+          name         = database.value.name
+          engine       = lookup(database.value, "engine", "MYSQL")
+          version      = lookup(database.value, "version", null)
+          production   = lookup(database.value, "production", false)
+          cluster_name = lookup(database.value, "cluster_name", null)
+          db_name      = lookup(database.value, "db_name", null)
+          db_user      = lookup(database.value, "db_user", null)
         }
 
       }
@@ -45,9 +45,9 @@ resource "digitalocean_app" "this" {
       dynamic "function" {
         for_each = length(keys(lookup(spec.value, "function", {}))) == 0 ? [] : [lookup(spec.value, "function", {})]
         content {
-          name              = function.value.name
-          source_dir        = lookup(function.value, "source_dir", null)
-            dynamic "git" {
+          name       = function.value.name
+          source_dir = lookup(function.value, "source_dir", null)
+          dynamic "git" {
             for_each = length(keys(lookup(function.value, "git", {}))) == 0 ? [] : [lookup(function.value, "git", {})]
             content {
               repo_clone_url = git.value.repo_clone_url
@@ -62,7 +62,7 @@ resource "digitalocean_app" "this" {
               deploy_on_push = lookup(github.value, "deploy_on_push", true)
             }
           }
-         dynamic "gitlab" {
+          dynamic "gitlab" {
             for_each = length(keys(lookup(function.value, "gitlab", {}))) == 0 ? [] : [lookup(function.value, "gitlab", {})]
             content {
               repo           = gitlab.value.repo
@@ -91,30 +91,30 @@ resource "digitalocean_app" "this" {
               disabled = lookup(alert.value, "disabled", false)
             }
           }
+
           dynamic "log_destination" {
-            for_each = length(keys(lookup(log_destination.value, "log_destination", {}))) == 0 ? [] : [lookup(log_destination.value, "log_destination", {})]
+            for_each = length(keys(lookup(function.value, "log_destination", {}))) == 0 ? [] : [lookup(function.value, "log_destination", {})]
             content {
               name = log_destination.value.name
               dynamic "papertrail" {
-              for_each = length(keys(lookup(log_destination.value, "papertrail", {}))) == 0 ? [] : [lookup(log_destination.value, "papertrail", {})]
-              content {
-                endpoint = lookup(log_destination.value, "endpoint", null)
+                for_each = length(keys(lookup(log_destination.value, "papertrail", {}))) == 0 ? [] : [lookup(log_destination.value, "papertrail", {})]
+                content {
+                  endpoint = lookup(log_destination.value, "endpoint", null)
+                }
+              }
+              dynamic "datadog" {
+                for_each = length(keys(lookup(log_destination.value, "datadog", {}))) == 0 ? [] : [lookup(log_destination.value, "datadog", {})]
+                content {
+                  api_key = lookup(log_destination.value, "api_key", null)
+                }
+              }
+              dynamic "logtail" {
+                for_each = length(keys(lookup(log_destination.value, "logtail", {}))) == 0 ? [] : [lookup(log_destination.value, "logtail", {})]
+                content {
+                  token = lookup(log_destination.value, "token", null)
+                }
 
               }
-            }
-            dynamic "datadog" {
-              for_each = length(keys(lookup(log_destination.value, "datadog", {}))) == 0 ? [] : [lookup(log_destination.value, "datadog", {})]
-              content {
-                api_key = lookup(log_destination.value, "api_key", null)
-              }
-            }
-            dynamic "logtail" {
-              for_each = length(keys(lookup(log_destination.value, "logtail", {}))) == 0 ? [] : [lookup(log_destination.value, "logtail", {})]
-              content {
-                token = lookup(log_destination.value, "token", null)
-              }
-
-            }
 
             }
 
