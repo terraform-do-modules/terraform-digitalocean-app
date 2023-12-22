@@ -41,6 +41,90 @@ resource "digitalocean_app" "this" {
 
       }
 
+
+      dynamic "function" {
+        for_each = length(keys(lookup(spec.value, "function", {}))) == 0 ? [] : [lookup(spec.value, "function", {})]
+        content {
+          name              = function.value.name
+          source_dir        = lookup(function.value, "source_dir", null)
+            dynamic "git" {
+            for_each = length(keys(lookup(function.value, "git", {}))) == 0 ? [] : [lookup(function.value, "git", {})]
+            content {
+              repo_clone_url = git.value.repo_clone_url
+              branch         = lookup(git.value, "branch", "master")
+            }
+          }
+          dynamic "github" {
+            for_each = length(keys(lookup(function.value, "github", {}))) == 0 ? [] : [lookup(function.value, "github", {})]
+            content {
+              repo           = github.value.repo
+              branch         = lookup(github.value, "branch", "master")
+              deploy_on_push = lookup(github.value, "deploy_on_push", true)
+            }
+          }
+         dynamic "gitlab" {
+            for_each = length(keys(lookup(function.value, "gitlab", {}))) == 0 ? [] : [lookup(function.value, "gitlab", {})]
+            content {
+              repo           = gitlab.value.repo
+              branch         = lookup(gitlab.value, "branch", "master")
+              deploy_on_push = lookup(gitlab.value, "deploy_on_push", true)
+            }
+          }
+
+          dynamic "env" {
+            for_each = lookup(function.value, "env", [])
+            content {
+              key   = env.value.key
+              value = env.value.value
+              scope = lookup(env.value, "scope", "RUN_AND_BUILD_TIME")
+              type  = env.value.type
+            }
+          }
+
+          dynamic "alert" {
+            for_each = length(keys(lookup(function.value, "alert", {}))) == 0 ? [] : [lookup(function.value, "alert", {})]
+            content {
+              rule     = lookup(alert.value, "rule", null)
+              value    = lookup(alert.value, "value", null)
+              operator = lookup(alert.value, "operator", null)
+              window   = lookup(alert.value, "window", null)
+              disabled = lookup(alert.value, "disabled", false)
+            }
+          }
+          dynamic "log_destination" {
+            for_each = length(keys(lookup(log_destination.value, "log_destination", {}))) == 0 ? [] : [lookup(log_destination.value, "log_destination", {})]
+            content {
+              name = log_destination.value.name
+              dynamic "papertrail" {
+              for_each = length(keys(lookup(log_destination.value, "papertrail", {}))) == 0 ? [] : [lookup(log_destination.value, "papertrail", {})]
+              content {
+                endpoint = lookup(log_destination.value, "endpoint", null)
+
+              }
+            }
+            dynamic "datadog" {
+              for_each = length(keys(lookup(log_destination.value, "datadog", {}))) == 0 ? [] : [lookup(log_destination.value, "datadog", {})]
+              content {
+                api_key = lookup(log_destination.value, "api_key", null)
+              }
+            }
+            dynamic "logtail" {
+              for_each = length(keys(lookup(log_destination.value, "logtail", {}))) == 0 ? [] : [lookup(log_destination.value, "logtail", {})]
+              content {
+                token = lookup(log_destination.value, "token", null)
+              }
+
+            }
+
+            }
+
+          }
+
+
+
+        }
+      }
+
       dynamic "static_site" {
         for_each = length(keys(lookup(spec.value, "static_site", {}))) == 0 ? [] : [lookup(spec.value, "static_site", {})]
         content {
