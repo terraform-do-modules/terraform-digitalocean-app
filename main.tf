@@ -302,6 +302,7 @@ resource "digitalocean_app" "this" {
             for_each = length(keys(lookup(service.value, "health_check", {}))) == 0 ? [] : [lookup(service.value, "health_check", {})]
             content {
               http_path             = lookup(health_check.value, "http_path", null)
+              port                  = lookup(health_check.value, "port", null)
               initial_delay_seconds = lookup(health_check.value, "initial_delay_seconds", null)
               period_seconds        = lookup(health_check.value, "period_seconds", null)
               timeout_seconds       = lookup(health_check.value, "timeout_seconds", null)
