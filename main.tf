@@ -38,12 +38,10 @@ resource "digitalocean_app" "this" {
           db_name      = lookup(database.value, "db_name", null)
           db_user      = lookup(database.value, "db_user", null)
         }
-
       }
 
       dynamic "ingress" {
         for_each = length(keys(lookup(spec.value, "ingress", {}))) == 0 ? [] : [lookup(spec.value, "ingress", {})]
-
         content {
           dynamic "rule" {
             for_each = length(keys(lookup(ingress.value, "rule", {}))) == 0 ? [] : [lookup(ingress.value, "rule", {})]
@@ -82,6 +80,10 @@ resource "digitalocean_app" "this" {
               dynamic "cors" {
                 for_each = length(keys(lookup(ingress.value, "cors", {}))) == 0 ? [] : [lookup(ingress.value, "cors", {})]
                 content {
+                  max_age = cors.value.max_age
+                  allow_credentials = cors.value.allow_credentials
+                  allow_headers = cors.value.allow_headers
+                  expose_headers = cors.value.expose_headers
                   dynamic "allow_origins" {
                     for_each = length(keys(lookup(ingress.value, "allow_origins", {}))) == 0 ? [] : [lookup(ingress.value, "allow_origins", {})]
                     content {
@@ -94,13 +96,10 @@ resource "digitalocean_app" "this" {
                 }
               }
 
-
             }
 
           }
         }
-
-
       }
 
 
