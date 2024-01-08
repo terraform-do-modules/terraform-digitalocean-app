@@ -27,6 +27,161 @@ resource "digitalocean_app" "this" {
           type  = env.value.type
         }
       }
+      dynamic "database" {
+        for_each = length(keys(lookup(spec.value, "database", {}))) == 0 ? [] : [lookup(spec.value, "database", {})]
+        content {
+          name         = database.value.name
+          engine       = lookup(database.value, "engine", null)
+          version      = lookup(database.value, "version", null)
+          production   = lookup(database.value, "production", false)
+          cluster_name = lookup(database.value, "cluster_name", null)
+          db_name      = lookup(database.value, "db_name", null)
+          db_user      = lookup(database.value, "db_user", null)
+        }
+      }
+
+      dynamic "ingress" {
+        for_each = length(keys(lookup(spec.value, "ingress", {}))) == 0 ? [] : [lookup(spec.value, "ingress", {})]
+        content {
+          dynamic "rule" {
+            for_each = length(keys(lookup(ingress.value, "rule", {}))) == 0 ? [] : [lookup(ingress.value, "rule", {})]
+            content {
+              dynamic "component" {
+                for_each = length(keys(lookup(ingress.value, "component", {}))) == 0 ? [] : [lookup(ingress.value, "component", {})]
+                content {
+                  name                 = component.value.name
+                  preserve_path_prefix = component.value.preserve_path_prefix
+                  rewrite              = component.value.rewrite
+                }
+              }
+              dynamic "match" {
+                for_each = length(keys(lookup(ingress.value, "match", {}))) == 0 ? [] : [lookup(ingress.value, "match", {})]
+                content {
+                  dynamic "path" {
+                    for_each = length(keys(lookup(ingress.value, "path", {}))) == 0 ? [] : [lookup(ingress.value, "path", {})]
+                    content {
+                      prefix = path.value.prefix
+                    }
+                  }
+                }
+              }
+              dynamic "redirect" {
+                for_each = length(keys(lookup(ingress.value, "redirect", {}))) == 0 ? [] : [lookup(ingress.value, "redirect", {})]
+                content {
+                  uri           = redirect.value.uri
+                  authority     = redirect.value.authority
+                  port          = redirect.value.port
+                  scheme        = redirect.value.scheme
+                  redirect_code = redirect.value.redirect_code
+
+                }
+
+              }
+              dynamic "cors" {
+                for_each = length(keys(lookup(ingress.value, "cors", {}))) == 0 ? [] : [lookup(ingress.value, "cors", {})]
+                content {
+                  max_age = cors.value.max_age
+                  allow_credentials = cors.value.allow_credentials
+                  allow_headers = cors.value.allow_headers
+                  expose_headers = cors.value.expose_headers
+                  dynamic "allow_origins" {
+                    for_each = length(keys(lookup(ingress.value, "allow_origins", {}))) == 0 ? [] : [lookup(ingress.value, "allow_origins", {})]
+                    content {
+                      exact  = allow_origins.value.exact
+                      prefix = allow_origins.value.prefix
+                      regex  = allow_origins.value.regex
+                    }
+
+                  }
+                }
+              }
+
+            }
+
+          }
+        }
+      }
+
+
+      dynamic "function" {
+        for_each = length(keys(lookup(spec.value, "function", {}))) == 0 ? [] : [lookup(spec.value, "function", {})]
+        content {
+          name       = function.value.name
+          source_dir = lookup(function.value, "source_dir", null)
+          dynamic "git" {
+            for_each = length(keys(lookup(function.value, "git", {}))) == 0 ? [] : [lookup(function.value, "git", {})]
+            content {
+              repo_clone_url = git.value.repo_clone_url
+              branch         = lookup(git.value, "branch", "master")
+            }
+          }
+          dynamic "github" {
+            for_each = length(keys(lookup(function.value, "github", {}))) == 0 ? [] : [lookup(function.value, "github", {})]
+            content {
+              repo           = github.value.repo
+              branch         = lookup(github.value, "branch", "master")
+              deploy_on_push = lookup(github.value, "deploy_on_push", true)
+            }
+          }
+          dynamic "gitlab" {
+            for_each = length(keys(lookup(function.value, "gitlab", {}))) == 0 ? [] : [lookup(function.value, "gitlab", {})]
+            content {
+              repo           = gitlab.value.repo
+              branch         = lookup(gitlab.value, "branch", "master")
+              deploy_on_push = lookup(gitlab.value, "deploy_on_push", true)
+            }
+          }
+
+          dynamic "env" {
+            for_each = lookup(function.value, "env", [])
+            content {
+              key   = env.value.key
+              value = env.value.value
+              scope = lookup(env.value, "scope", "RUN_AND_BUILD_TIME")
+              type  = env.value.type
+            }
+          }
+
+          dynamic "alert" {
+            for_each = length(keys(lookup(function.value, "alert", {}))) == 0 ? [] : [lookup(function.value, "alert", {})]
+            content {
+              rule     = lookup(alert.value, "rule", null)
+              value    = lookup(alert.value, "value", null)
+              operator = lookup(alert.value, "operator", null)
+              window   = lookup(alert.value, "window", null)
+              disabled = lookup(alert.value, "disabled", false)
+            }
+          }
+
+          dynamic "log_destination" {
+            for_each = length(keys(lookup(function.value, "log_destination", {}))) == 0 ? [] : [lookup(function.value, "log_destination", {})]
+            content {
+              name = log_destination.value.name
+              dynamic "papertrail" {
+                for_each = length(keys(lookup(log_destination.value, "papertrail", {}))) == 0 ? [] : [lookup(log_destination.value, "papertrail", {})]
+                content {
+                  endpoint = lookup(log_destination.value, "endpoint", null)
+                }
+              }
+              dynamic "datadog" {
+                for_each = length(keys(lookup(log_destination.value, "datadog", {}))) == 0 ? [] : [lookup(log_destination.value, "datadog", {})]
+                content {
+                  api_key = lookup(log_destination.value, "api_key", null)
+                }
+              }
+              dynamic "logtail" {
+                for_each = length(keys(lookup(log_destination.value, "logtail", {}))) == 0 ? [] : [lookup(log_destination.value, "logtail", {})]
+                content {
+                  token = lookup(log_destination.value, "token", null)
+                }
+
+              }
+
+            }
+          }
+
+        }
+      }
 
       dynamic "static_site" {
         for_each = length(keys(lookup(spec.value, "static_site", {}))) == 0 ? [] : [lookup(spec.value, "static_site", {})]
@@ -106,6 +261,7 @@ resource "digitalocean_app" "this" {
           }
         }
       }
+
 
       dynamic "service" {
         for_each = length(keys(lookup(spec.value, "service", {}))) == 0 ? [] : [lookup(spec.value, "service", {})]
@@ -204,6 +360,7 @@ resource "digitalocean_app" "this" {
             for_each = length(keys(lookup(service.value, "health_check", {}))) == 0 ? [] : [lookup(service.value, "health_check", {})]
             content {
               http_path             = lookup(health_check.value, "http_path", null)
+              port                  = lookup(health_check.value, "port", null)
               initial_delay_seconds = lookup(health_check.value, "initial_delay_seconds", null)
               period_seconds        = lookup(health_check.value, "period_seconds", null)
               timeout_seconds       = lookup(health_check.value, "timeout_seconds", null)
