@@ -80,10 +80,10 @@ resource "digitalocean_app" "this" {
               dynamic "cors" {
                 for_each = length(keys(lookup(ingress.value, "cors", {}))) == 0 ? [] : [lookup(ingress.value, "cors", {})]
                 content {
-                  max_age = cors.value.max_age
+                  max_age           = cors.value.max_age
                   allow_credentials = cors.value.allow_credentials
-                  allow_headers = cors.value.allow_headers
-                  expose_headers = cors.value.expose_headers
+                  allow_headers     = cors.value.allow_headers
+                  expose_headers    = cors.value.expose_headers
                   dynamic "allow_origins" {
                     for_each = length(keys(lookup(ingress.value, "allow_origins", {}))) == 0 ? [] : [lookup(ingress.value, "allow_origins", {})]
                     content {
