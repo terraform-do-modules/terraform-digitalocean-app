@@ -24,16 +24,31 @@ badges:
   - name: "Licence"
     image: "https://img.shields.io/badge/License-APACHE-blue.svg"
     url: "LICENSE.md"
+  - name: "Changelog"
+    image: "https://img.shields.io/badge/Changelog-blue"
+    url: "CHANGELOG.md"
 
 prerequesties:
-  - name: Terraform 1.5.4
+  - name: Terraform
     url: https://learn.hashicorp.com/terraform/getting-started/install.html
+    version: ">= 1.5.4"
+
+providers:
+  - name: digitalocean
+    url: https://www.digitalocean.com/
+    version: ">= 2.34.1"
+
 #  description of this project
 description: |-
   Terraform module to create Digitalocean app service resource on Digitalocean.
 # extra content
 include:
-  - "terraform.md"
+  - "docs/io.md"
+
+module_dependencies:
+  - name: Labels Module
+    url: https://github.com/clouddrove/terraform-aws-labels
+    description: Provides resource tagging.
 
 # How to use this project
 usage: |-
