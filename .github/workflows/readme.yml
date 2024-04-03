@@ -42,7 +42,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN}}
 
-
       - name: 'pre-commit check errors'
         uses: pre-commit/action@v3.0.1
         continue-on-error: true
@@ -57,7 +56,7 @@ jobs:
         with:
           actions_subcommand: 'push'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB }}
 
       # - name: 'Slack Notification'
       #   uses: clouddrove/action-slack@v2
