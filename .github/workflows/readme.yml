@@ -38,7 +38,7 @@ jobs:
         uses: 'clouddrove/github-actions@9.0.3'
         with:
           actions_subcommand: 'readme'
-          github_token: '${{ secrets.GITHUB }}'
+          github_token: '${{ secrets.GITHUB_TOKEN }}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
