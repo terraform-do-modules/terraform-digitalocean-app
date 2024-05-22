@@ -73,9 +73,7 @@ resource "digitalocean_app" "this" {
                   port          = redirect.value.port
                   scheme        = redirect.value.scheme
                   redirect_code = redirect.value.redirect_code
-
                 }
-
               }
               dynamic "cors" {
                 for_each = length(keys(lookup(ingress.value, "cors", {}))) == 0 ? [] : [lookup(ingress.value, "cors", {})]
@@ -91,17 +89,13 @@ resource "digitalocean_app" "this" {
                       prefix = allow_origins.value.prefix
                       regex  = allow_origins.value.regex
                     }
-
                   }
                 }
               }
-
             }
-
           }
         }
       }
-
 
       dynamic "function" {
         for_each = length(keys(lookup(spec.value, "function", {}))) == 0 ? [] : [lookup(spec.value, "function", {})]
@@ -174,12 +168,9 @@ resource "digitalocean_app" "this" {
                 content {
                   token = lookup(log_destination.value, "token", null)
                 }
-
               }
-
             }
           }
-
         }
       }
 
