@@ -28,6 +28,7 @@ resource "digitalocean_app" "this" {
           type  = env.value.type
         }
       }
+
       dynamic "database" {
         for_each = length(keys(lookup(spec.value, "database", {}))) == 0 ? [] : [lookup(spec.value, "database", {})]
         content {
@@ -349,6 +350,14 @@ resource "digitalocean_app" "this" {
               failure_threshold     = lookup(health_check.value, "failure_threshold", null)
             }
           }
+        }
+      }
+
+      dynamic "alert" {
+        for_each = length(keys(lookup(spec.value, "alert", {}))) == 0 ? [] : [lookup(spec.value, "alert", {})]
+        content {
+          rule     = lookup(alert.value, "rule", null)
+          disabled = lookup(alert.value, "disabled", false)
         }
       }
     }
