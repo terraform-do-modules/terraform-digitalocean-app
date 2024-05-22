@@ -246,16 +246,16 @@ resource "digitalocean_app" "this" {
       dynamic "service" {
         for_each = length(keys(lookup(spec.value, "service", {}))) == 0 ? [] : [lookup(spec.value, "service", {})]
         content {
-          name               = spec.value.name
-          build_command      = lookup(spec.value, "build_command", null)
-          dockerfile_path    = lookup(spec.value, "dockerfile_path", null)
-          source_dir         = lookup(spec.value, "source_dir", null)
-          run_command        = lookup(spec.value, "run_command", null)
-          environment_slug   = lookup(spec.value, "environment_slug", null)
-          instance_size_slug = lookup(spec.value, "instance_size_slug", "basic-xxs")
-          instance_count     = lookup(spec.value, "instance_count", 1)
-          http_port          = lookup(spec.value, "http_port", 80)
-          internal_ports     = lookup(spec.value, "internal_ports", null)
+          name               = lookup(service.value, "name", spec.value.name)
+          build_command      = lookup(service.value, "build_command", null)
+          dockerfile_path    = lookup(service.value, "dockerfile_path", null)
+          source_dir         = lookup(service.value, "source_dir", null)
+          run_command        = lookup(service.value, "run_command", null)
+          environment_slug   = lookup(service.value, "environment_slug", null)
+          instance_size_slug = lookup(service.value, "instance_size_slug", "basic-xxs")
+          instance_count     = lookup(service.value, "instance_count", 1)
+          http_port          = lookup(service.value, "http_port", 80)
+          internal_ports     = lookup(service.value, "internal_ports", null)
 
           dynamic "image" {
             for_each = length(keys(lookup(service.value, "image", {}))) == 0 ? [] : [lookup(service.value, "image", {})]
