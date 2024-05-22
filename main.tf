@@ -240,19 +240,8 @@ resource "digitalocean_app" "this" {
               allow_credentials = lookup(cors.value, "allow_credentials", null)
             }
           }
-
-          dynamic "env" {
-            for_each = lookup(static_site.value, "env", [])
-            content {
-              key   = env.value.key
-              value = env.value.value
-              scope = lookup(env.value, "scope", "RUN_AND_BUILD_TIME")
-              type  = env.value.type
-            }
-          }
         }
       }
-
 
       dynamic "service" {
         for_each = length(keys(lookup(spec.value, "service", {}))) == 0 ? [] : [lookup(spec.value, "service", {})]
