@@ -6,8 +6,9 @@ resource "digitalocean_app" "this" {
   dynamic "spec" {
     for_each = try(jsondecode(var.spec), var.spec)
     content {
-      name   = spec.value.name
-      region = spec.value.region
+      name     = spec.value.name
+      region   = spec.value.region
+      features = lookup(spec.value, "features", [])
       dynamic "domain" {
         for_each = length(keys(lookup(spec.value, "domain", {}))) == 0 ? [] : [lookup(spec.value, "domain", {})]
         content {
