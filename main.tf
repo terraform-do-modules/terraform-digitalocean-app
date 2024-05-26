@@ -6,8 +6,9 @@ resource "digitalocean_app" "this" {
   dynamic "spec" {
     for_each = try(jsondecode(var.spec), var.spec)
     content {
-      name   = spec.value.name
-      region = spec.value.region
+      name     = spec.value.name
+      region   = spec.value.region
+      features = lookup(spec.value, "features", [])
       dynamic "domain" {
         for_each = length(keys(lookup(spec.value, "domain", {}))) == 0 ? [] : [lookup(spec.value, "domain", {})]
         content {
@@ -27,6 +28,7 @@ resource "digitalocean_app" "this" {
           type  = env.value.type
         }
       }
+
       dynamic "database" {
         for_each = length(keys(lookup(spec.value, "database", {}))) == 0 ? [] : [lookup(spec.value, "database", {})]
         content {
@@ -73,9 +75,7 @@ resource "digitalocean_app" "this" {
                   port          = redirect.value.port
                   scheme        = redirect.value.scheme
                   redirect_code = redirect.value.redirect_code
-
                 }
-
               }
               dynamic "cors" {
                 for_each = length(keys(lookup(ingress.value, "cors", {}))) == 0 ? [] : [lookup(ingress.value, "cors", {})]
@@ -91,17 +91,13 @@ resource "digitalocean_app" "this" {
                       prefix = allow_origins.value.prefix
                       regex  = allow_origins.value.regex
                     }
-
                   }
                 }
               }
-
             }
-
           }
         }
       }
-
 
       dynamic "function" {
         for_each = length(keys(lookup(spec.value, "function", {}))) == 0 ? [] : [lookup(spec.value, "function", {})]
@@ -174,12 +170,9 @@ resource "digitalocean_app" "this" {
                 content {
                   token = lookup(log_destination.value, "token", null)
                 }
-
               }
-
             }
           }
-
         }
       }
 
@@ -249,33 +242,22 @@ resource "digitalocean_app" "this" {
               allow_credentials = lookup(cors.value, "allow_credentials", null)
             }
           }
-
-          dynamic "env" {
-            for_each = lookup(static_site.value, "env", [])
-            content {
-              key   = env.value.key
-              value = env.value.value
-              scope = lookup(env.value, "scope", "RUN_AND_BUILD_TIME")
-              type  = env.value.type
-            }
-          }
         }
       }
-
 
       dynamic "service" {
         for_each = length(keys(lookup(spec.value, "service", {}))) == 0 ? [] : [lookup(spec.value, "service", {})]
         content {
-          name               = spec.value.name
-          build_command      = lookup(spec.value, "build_command", null)
-          dockerfile_path    = lookup(spec.value, "dockerfile_path", null)
-          source_dir         = lookup(spec.value, "source_dir", null)
-          run_command        = lookup(spec.value, "run_command", null)
-          environment_slug   = lookup(spec.value, "environment_slug", null)
-          instance_size_slug = lookup(spec.value, "instance_size_slug", "basic-xxs")
-          instance_count     = lookup(spec.value, "instance_count", 1)
-          http_port          = lookup(spec.value, "http_port", 80)
-          internal_ports     = lookup(spec.value, "internal_ports", null)
+          name               = lookup(service.value, "name", spec.value.name)
+          build_command      = lookup(service.value, "build_command", null)
+          dockerfile_path    = lookup(service.value, "dockerfile_path", null)
+          source_dir         = lookup(service.value, "source_dir", null)
+          run_command        = lookup(service.value, "run_command", null)
+          environment_slug   = lookup(service.value, "environment_slug", null)
+          instance_size_slug = lookup(service.value, "instance_size_slug", "basic-xxs")
+          instance_count     = lookup(service.value, "instance_count", 1)
+          http_port          = lookup(service.value, "http_port", 80)
+          internal_ports     = lookup(service.value, "internal_ports", null)
 
           dynamic "image" {
             for_each = length(keys(lookup(service.value, "image", {}))) == 0 ? [] : [lookup(service.value, "image", {})]
@@ -368,6 +350,14 @@ resource "digitalocean_app" "this" {
               failure_threshold     = lookup(health_check.value, "failure_threshold", null)
             }
           }
+        }
+      }
+
+      dynamic "alert" {
+        for_each = length(keys(lookup(spec.value, "alert", {}))) == 0 ? [] : [lookup(spec.value, "alert", {})]
+        content {
+          rule     = lookup(alert.value, "rule", null)
+          disabled = lookup(alert.value, "disabled", false)
         }
       }
     }

@@ -55,9 +55,9 @@ usage: |-
   Here are some examples of how you can use this module in your inventory structure:
   ## basic example
   ```hcl
-  module "domain" {
+  module "app" {
     source          = "terraform-do-modules/app/digitalocean"
-    version         = "1.0.0"
+    version         = "1.0.2"
     spec = [{
       name   = "test"
       region = "nyc"
@@ -90,12 +90,12 @@ usage: |-
       }
     }]
   }
-    ```
+  ```
   ## complete example
   ```hcl
-  module "domain" {
+  module "app" {
     source          = "terraform-do-modules/app/digitalocean"
-    version         = "1.0.0"
+    version         = "1.0.2"
     spec = [{
       name   = "test"
       region = "nyc"
@@ -122,4 +122,4 @@ usage: |-
       }
     }]
   }
-    ```
+  ```
