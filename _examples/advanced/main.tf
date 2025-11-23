@@ -60,6 +60,10 @@ module "app" {
     name   = "app-name"
     region = "nyc"
 
+    vpc = {
+      id = module.vpc.id
+    }
+
     database = {
       name         = "org-name-dev-mysql"
       engine       = "MYSQL"
