@@ -78,9 +78,9 @@ module "app" {
       name = "app-name"
       image = {
         registry_type  = "DOCKER_HUB"
-        registry       = "songhanpoo"
-        repository     = "wordpress-ols"
-        tag            = "0.1.2"
+        registry       = "<REGISTRY>"
+        repository     = "<IMAGE-NAME>"
+        tag            = "<IMAGE-VERSION>"
         internal_ports = "80"
         deploy_on_push = {
           enabled = true
