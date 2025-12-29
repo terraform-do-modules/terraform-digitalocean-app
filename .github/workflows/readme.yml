@@ -1,36 +1,19 @@
 name: 'Create README.md file'
-permissions: write-all
-
 on:
   push:
     branches:
       - master
-    paths-ignore:
-      - '**/*README.md'
-  workflow_dispatch:
 
 jobs:
-
-  readme-create:
-
+  readme:
     name: 'readme-create'
     runs-on: ubuntu-latest
-
     steps:
-      - name: Updating GitHub Token
-        env: 
-          GITHUB_TOKEN: ${{ secrets.GITHUB}}
-        run: echo "GH_TOKEN=${GITHUB_TOKEN}" >> $GITHUB_ENV
-
-      - name: checkout
-        uses: actions/checkout@master
-        with:
-          fetch-depth: 0
-          ref: ${{ github.head_ref }}
-          token: ${{ env.GH_TOKEN }}
+      - name: 'Checkout'
+        uses: actions/checkout@v4
 
       - name: 'Set up Python 3.7'
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: '3.x'
 
@@ -40,8 +23,7 @@ jobs:
           actions_subcommand: 'readme'
           github_token: '${{ secrets.GITHUB }}'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB }}
-
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 'pre-commit check errors'
         uses: pre-commit/action@v3.0.1
@@ -59,13 +41,13 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      # - name: 'Slack Notification'
-      #   uses: clouddrove/action-slack@v2
-      #   with:
-      #     status: ${{ job.status }}
-      #     fields: repo,author
-      #     author_name: 'CloudDrove'
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # required
-      #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_TERRAFORM }} # required
-      #   if: always()
+      - name: 'Slack Notification'
+        uses: clouddrove/action-slack@v2
+        with:
+          status: ${{ job.status }}
+          fields: repo,author
+          author_name: 'CloudDrove'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # required
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_TERRAFORM }} # required
+        if: always()
