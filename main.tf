@@ -87,9 +87,8 @@ resource "digitalocean_app" "this" {
                   dynamic "allow_origins" {
                     for_each = length(keys(lookup(ingress.value, "allow_origins", {}))) == 0 ? [] : [lookup(ingress.value, "allow_origins", {})]
                     content {
-                      exact  = allow_origins.value.exact
-                      prefix = allow_origins.value.prefix
-                      regex  = allow_origins.value.regex
+                      exact = allow_origins.value.exact
+                      regex = allow_origins.value.regex
                     }
                   }
                 }
@@ -225,13 +224,6 @@ resource "digitalocean_app" "this" {
             }
           }
 
-          dynamic "routes" {
-            for_each = length(keys(lookup(static_site.value, "routes", {}))) == 0 ? [] : [lookup(static_site.value, "routes", {})]
-            content {
-              path = lookup(routes.value, "path", "/")
-            }
-          }
-
           dynamic "cors" {
             for_each = lookup(static_site.value, "cors", [])
             content {
@@ -308,13 +300,6 @@ resource "digitalocean_app" "this" {
               value = env.value.value
               scope = lookup(env.value, "scope", "RUN_AND_BUILD_TIME")
               type  = env.value.type
-            }
-          }
-
-          dynamic "routes" {
-            for_each = length(keys(lookup(service.value, "routes", {}))) == 0 ? [] : [lookup(service.value, "routes", {})]
-            content {
-              path = lookup(routes.value, "path", "/")
             }
           }
 
