@@ -3,6 +3,34 @@
 ## [1.0.4] - 2026-02-06
 
 ### Changes
+- 📝 docs: update CHANGELOG for v1.0.4
+- ⬆️ upgrade: update examples to use provider >= 2.70.0
+- 📚 Add comprehensive CONTRIBUTING.md
+- ⬆️ Upgrade provider & standardize workflows
+- Merge PR #26: Add VPC configuration support for app
+- 📝 Update CHANGELOG for v1.0.3
+- Merge PR #27: fix: updated workflow & removed deprecated arguments
+- fix: updated workflow & removed deprecated arguments
+- chore: standardize GitHub Actions workflows and fix code issues
+- :memo: adjust service for example
+
+## [1.0.4] - 2026-02-06
+## [1.0.4] - 2026-02-06
+
+### Changes
+- 📝 docs: update CHANGELOG for v1.0.4
+- ⬆️ upgrade: update examples to use provider >= 2.70.0
+- 📚 Add comprehensive CONTRIBUTING.md
+- ⬆️ Upgrade provider & standardize workflows
+- Merge PR #26: Add VPC configuration support for app
+- 📝 Update CHANGELOG for v1.0.3
+- Merge PR #27: fix: updated workflow & removed deprecated arguments
+- fix: updated workflow & removed deprecated arguments
+- chore: standardize GitHub Actions workflows and fix code issues
+- :memo: adjust service for example
+
+
+### Changes
 
 
 
