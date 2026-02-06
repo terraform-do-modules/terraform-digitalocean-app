@@ -9,6 +9,14 @@ resource "digitalocean_app" "this" {
       name     = spec.value.name
       region   = spec.value.region
       features = lookup(spec.value, "features", [])
+
+      dynamic "vpc" {
+        for_each = length(keys(lookup(spec.value, "vpc", {}))) == 0 ? [] : [lookup(spec.value, "vpc", {})]
+        content {
+          id = vpc.value.id
+        }
+      }
+
       dynamic "domain" {
         for_each = length(keys(lookup(spec.value, "domain", {}))) == 0 ? [] : [lookup(spec.value, "domain", {})]
         content {

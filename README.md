@@ -2,7 +2,6 @@
 
 <p align="center"> <img src="https://user-images.githubusercontent.com/50652676/62349836-882fef80-b51e-11e9-99e3-7b974309c7e3.png" width="100" height="100"></p>
 
-
 <h1 align="center">
     Terraform Digitalocean App
 </h1>
@@ -23,7 +22,6 @@
   <img src="https://img.shields.io/badge/License-APACHE-blue.svg" alt="Licence">
 </a>
 
-
 </p>
 <p align="center">
 
@@ -40,35 +38,26 @@
 </p>
 <hr>
 
-
-We eat, drink, sleep and most importantly love **DevOps**. We are working towards strategies for standardizing architecture while ensuring security for the infrastructure. We are strong believer of the philosophy <b>Bigger problems are always solved by breaking them into smaller manageable problems</b>. Resonating with microservices architecture, it is considered best-practice to run database, cluster, storage in smaller <b>connected yet manageable pieces</b> within the infrastructure. 
+We eat, drink, sleep and most importantly love **DevOps**. We are working towards strategies for standardizing architecture while ensuring security for the infrastructure. We are strong believer of the philosophy <b>Bigger problems are always solved by breaking them into smaller manageable problems</b>. Resonating with microservices architecture, it is considered best-practice to run database, cluster, storage in smaller <b>connected yet manageable pieces</b> within the infrastructure.
 
 This module is basically combination of [Terraform open source](https://www.terraform.io/) and includes automation tests and examples. It also helps to create and improve your infrastructure with minimalistic code instead of maintaining the whole infrastructure code yourself.
 
-We have [*fifty plus terraform modules*][terraform_modules]. A few of them are completed and are available for open source usage while a few others are in progress.
-
-
-
+We have [_fifty plus terraform modules_][terraform_modules]. A few of them are completed and are available for open source usage while a few others are in progress.
 
 ## Prerequisites
 
-This module has a few dependencies: 
+This module has a few dependencies:
+
 - [Terraform 1.5.4](https://learn.hashicorp.com/terraform/getting-started/install.html)
-
-
-
-
-
-
 
 ## Examples
 
-
 **IMPORTANT:** Since the `master` branch used in `source` varies based on new modifications, we suggest that you use the release versions [here](https://github.com/terraform-do-modules/terraform-digitalocean-app/releases).
 
-
 Here are some examples of how you can use this module in your inventory structure:
+
 ## basic example
+
 ```hcl
 module "app" {
   source          = "terraform-do-modules/app/digitalocean"
@@ -106,7 +95,9 @@ module "app" {
   }]
 }
 ```
+
 ## complete example
+
 ```hcl
 module "app" {
   source          = "terraform-do-modules/app/digitalocean"
@@ -139,43 +130,109 @@ module "app" {
 }
 ```
 
+## advanced example
 
+```hcl
+module "app" {
+  source  = "terraform-do-modules/app/digitalocean"
+  version = "1.0.2"
+  spec = [{
+    name   = "app-name"
+    region = "nyc"
 
+    database = {
+      name         = "org-name-dev-mysql"
+      engine       = "MYSQL"
+      version      = "8"
+      production   = true
+      cluster_name = "org-name-dev-mysql"
+      db_name      = "dev"
+      db_user      = "app-name"
+    }
 
+    service = {
+      name = "app-name"
+      image = {
+        registry_type  = "DOCKER_HUB"
+        registry       = "songhanpoo"
+        repository     = "wordpress-ols"
+        tag            = "0.1.2"
+        internal_ports = "80"
+        deploy_on_push = {
+          enabled = true
+        }
+      }
 
+      alert = {
+        rule     = "CPU_UTILIZATION"
+        value    = 50
+        operator = "GREATER_THAN"
+        window   = "FIVE_MINUTES"
+        disabled = false
+      }
+
+      env = [
+        {
+          key   = "DATABASE_HOST",
+          type  = "GENERAL",
+          value = module.mysql.database_cluster_private_host,
+        },
+        {
+          key   = "DATABASE_PORT_NUMBER",
+          type  = "GENERAL"
+          value = module.mysql.database_cluster_port,
+        },
+        {
+          key   = "DATABASE_NAME",
+          type  = "GENERAL",
+          value = "dev",
+        },
+        {
+          key   = "DATABASE_USER",
+          type  = "SECRET",
+          value = "app-name",
+        },
+        {
+          key   = "DATABASE_PASSWORD",
+          type  = "SECRET",
+          value = module.mysql.database_cluster_password,
+        },
+      ]
+    }
+  }]
+}
+```
 
 ## Inputs
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| enabled | Flag to control the resources creation. | `bool` | `true` | no |
-| spec | (Required) A DigitalOcean App spec describing the app. | `any` | `[]` | no |
+| Name    | Description                                            | Type   | Default | Required |
+| ------- | ------------------------------------------------------ | ------ | ------- | :------: |
+| enabled | Flag to control the resources creation.                | `bool` | `true`  |    no    |
+| spec    | (Required) A DigitalOcean App spec describing the app. | `any`  | `[]`    |    no    |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| active\_deployment\_id | The ID the app's currently active deployment. |
-| created\_at | The date and time of when the app was created. |
-| default\_ingress | The default URL to access the app. |
-| id | ID of the app. |
-| live\_url | The live URL of the app. |
-| updated\_at | The date and time of when the app was last updated. |
-
-
-
+| Name                 | Description                                         |
+| -------------------- | --------------------------------------------------- |
+| active_deployment_id | The ID the app's currently active deployment.       |
+| created_at           | The date and time of when the app was created.      |
+| default_ingress      | The default URL to access the app.                  |
+| id                   | ID of the app.                                      |
+| live_url             | The live URL of the app.                            |
+| updated_at           | The date and time of when the app was last updated. |
 
 ## Testing
-In this module testing is performed with [terratest](https://github.com/gruntwork-io/terratest), and it creates a small piece of infrastructure, matches the output like ARN, ID and Tags name etc and destroy infrastructure in your AWS account. This testing is written in GO, so you need a [GO environment](https://golang.org/doc/install) in your system. 
+
+In this module testing is performed with [terratest](https://github.com/gruntwork-io/terratest), and it creates a small piece of infrastructure, matches the output like ARN, ID and Tags name etc and destroy infrastructure in your AWS account. This testing is written in GO, so you need a [GO environment](https://golang.org/doc/install) in your system.
 
 You need to run the following command in the testing folder:
+
 ```shell
   go test -run Test
 ```
 
-
-
 ## Feedback
+
 If you come across a bug or have any feedback, please log it in our [issue tracker](https://github.com/terraform-do-modules/terraform-digitalocean-app/issues), or feel free to drop us an email at [hello@clouddrove.com](mailto:hello@clouddrove.com).
 
 If you have found it worth your time, go ahead and give us a ★ on [our GitHub](https://github.com/terraform-do-modules/terraform-digitalocean-app)!
@@ -188,9 +245,9 @@ At [CloudDrove][website], we offer expert guidance, implementation support and s
 <hr />
 <p align="center">We ❤️  <a href="https://github.com/clouddrove">Open Source</a> and you can check out <a href="https://github.com/clouddrove">our other modules</a> to get help with your new Cloud ideas.</p>
 
-  [website]: https://clouddrove.com
-  [github]: https://github.com/clouddrove
-  [linkedin]: https://cpco.io/linkedin
-  [twitter]: https://twitter.com/clouddrove/
-  [email]: https://clouddrove.com/contact-us.html
-  [terraform_modules]: https://github.com/clouddrove?utf8=%E2%9C%93&q=terraform-&type=&language=
+[website]: https://clouddrove.com
+[github]: https://github.com/clouddrove
+[linkedin]: https://cpco.io/linkedin
+[twitter]: https://twitter.com/clouddrove/
+[email]: https://clouddrove.com/contact-us.html
+[terraform_modules]: https://github.com/clouddrove?utf8=%E2%9C%93&q=terraform-&type=&language=
