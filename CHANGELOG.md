@@ -1,5 +1,10 @@
 
 ## [1.0.3] - 2026-02-06
+## [1.0.4] - 2026-02-06
+
+### Changes
+
+
 
 ### 👷 CI/CD Changes
 - Merge PR #27: fix: updated workflow & removed deprecated arguments
