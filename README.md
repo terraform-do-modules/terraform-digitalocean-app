@@ -203,6 +203,18 @@ module "app" {
 }
 ```
 
+
+## Architecture Guidance
+
+For production usage guidance, see [`docs/architecture.md`](docs/architecture.md).
+
+## Production Example Checklist
+
+- Use dedicated environment-specific variables for `spec`.
+- Pin module versions in all consumer stacks.
+- Validate `_examples/complete` in CI before release.
+- Document domain ownership and alert thresholds.
+
 ## Inputs
 
 | Name    | Description                                            | Type   | Default | Required |
