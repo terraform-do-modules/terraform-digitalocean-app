@@ -6,12 +6,12 @@ on:
   workflow_dispatch:
 jobs:
   basic-example:
-    uses: clouddrove/github-shared-workflows/.github/workflows/stf-checks.yml@521761c1a5cf68d919980a2ed84b755182aeabfe # pinned to latest
+    uses: clouddrove/github-shared-workflows/.github/workflows/stf-checks.yml@1c43f71cb95be532a4ee848596eb73953dde517c # pinned to latest
     with:
       provider: digitalocean
       working_directory: './_examples/basic/'
   complete-example:
-    uses: clouddrove/github-shared-workflows/.github/workflows/stf-checks.yml@521761c1a5cf68d919980a2ed84b755182aeabfe # pinned to latest
+    uses: clouddrove/github-shared-workflows/.github/workflows/stf-checks.yml@1c43f71cb95be532a4ee848596eb73953dde517c # pinned to latest
     with:
       provider: digitalocean
       working_directory: './_examples/complete/'
