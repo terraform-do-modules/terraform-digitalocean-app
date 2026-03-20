@@ -23,7 +23,7 @@ module "mysql" {
   region                       = "nyc"
   cluster_engine               = "mysql"
   cluster_version              = "8"
-  cluster_size                 = "db-s-1vcpu-1gb" # Explore more https://slugs.do-api.dev/ 
+  cluster_size                 = "db-s-1vcpu-1gb" # Explore more https://slugs.do-api.dev/
   cluster_node_count           = 1
   cluster_private_network_uuid = module.vpc.id
   mysql_sql_mode               = "ANSI,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION,NO_ZERO_DATE,NO_ZERO_IN_DATE,STRICT_ALL_TABLES,ALLOW_INVALID_DATES"
