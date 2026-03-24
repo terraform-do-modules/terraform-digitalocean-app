@@ -1,7 +1,7 @@
 name: PR Validation
 
 on:
-  pull_request_target:
+  pull_request:
     types:
       - opened
       - edited
@@ -11,7 +11,7 @@ on:
 jobs:
   pr-validation:
     if: github.actor != 'dependabot[bot]'
-    uses: clouddrove/github-shared-workflows/.github/workflows/pr-checks.yml@61a4d250f08b1e4dd29c61bb8a73eaf9dd0f2a8f # pinned to latest
+    uses: clouddrove/github-shared-workflows/.github/workflows/pr-checks.yml@v2
     secrets: inherit
     with:
       subjectPattern: '^.+$'
