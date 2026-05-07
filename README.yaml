@@ -1,63 +1,46 @@
----
-#
-# This is the canonical configuration for the `README.md`
-# Run `make readme` to rebuild the `README.md`
-#
+name: Terraform DigitalOcean App
 
-# Name of this project
-name : Terraform Digitalocean App
+intro: |-
+  Streamline operations, automate workflows, improve team collaboration, and deploy with confidence using our complete DevOps toolkit.
 
-# License of this project
+badges_text: "Latest Release | tfsec | License | Changelog"
+
+about: |-
+  Terraform module to create and manage App Service on Digital Ocean.
+
 license: "APACHE"
 
-# Canonical GitHub repo
 github_repo: terraform-do-modules/terraform-digitalocean-app
 
-# Badges to display
 badges:
-  - name: "Latest Release"
-    image: "https://img.shields.io/github/release/terraform-do-modules/terraform-digitalocean-app.svg"
-    url: "https://github.com/terraform-do-modules/terraform-digitalocean-app/releases/latest"
-  - name: "tfsec"
-    image: "https://github.com/terraform-do-modules/terraform-digitalocean-app/actions/workflows/tfsec.yml/badge.svg"
-    url: "https://github.com/terraform-do-modules/terraform-digitalocean-app/actions/workflows/tfsec.yml"
+  - name: "Terraform"
+    image: "https://img.shields.io/badge/Terraform-v1.6-green"
+    url: "https://www.terraform.io"
+
+  - name: "OpenTofu"
+    image: "https://img.shields.io/badge/OpenTofu-v1.6-purple"
+    url: "https://opentofu.org"
+
   - name: "Licence"
     image: "https://img.shields.io/badge/License-APACHE-blue.svg"
     url: "LICENSE.md"
-  - name: "Changelog"
-    image: "https://img.shields.io/badge/Changelog-blue"
-    url: "CHANGELOG.md"
 
 prerequesties:
-  - name: Terraform
-    url: https://learn.hashicorp.com/terraform/getting-started/install.html
-    version: ">= 1.5.4"
+  - name: Terraform >= 1.6.0
+    url: https://developer.hashicorp.com/terraform/install
+  - name: OpenTofu >= 1.6.0
+    url: https://opentofu.org/docs/intro/install/
 
-providers:
-  - name: digitalocean
-    url: https://www.digitalocean.com/
-    version: ">= 2.34.1"
-
-#  description of this project
 description: |-
-  Terraform module to create Digitalocean app service resource on Digitalocean.
-# extra content
-include:
-  - "docs/io.md"
+  Terraform module to create and manage App Service on Digital Ocean.
 
-module_dependencies:
-  - name: Labels Module
-    url: https://github.com/clouddrove/terraform-aws-labels
-    description: Provides resource tagging.
-
-# How to use this project
 usage: |-
   Here are some examples of how you can use this module in your inventory structure:
   ## basic example
   ```hcl
   module "app" {
     source          = "terraform-do-modules/app/digitalocean"
-    version         = "1.0.2"
+    version         = "1.0.8"
     spec = [{
       name   = "test"
       region = "nyc"
@@ -95,7 +78,7 @@ usage: |-
   ```hcl
   module "app" {
     source          = "terraform-do-modules/app/digitalocean"
-    version         = "1.0.2"
+    version         = "1.0.8"
     spec = [{
       name   = "test"
       region = "nyc"
@@ -122,4 +105,18 @@ usage: |-
       }
     }]
   }
+  ```
+
+  ### Deploy with Terraform
+  ```bash
+  terraform init
+  terraform plan
+  terraform apply
+  ```
+
+  ### Deploy with OpenTofu
+  ```bash
+  tofu init
+  tofu plan
+  tofu apply
   ```
