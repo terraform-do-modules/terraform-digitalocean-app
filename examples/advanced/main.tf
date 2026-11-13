@@ -17,7 +17,7 @@ module "vpc" {
 ##------------------------------------------------
 module "mysql" {
   source                       = "terraform-do-modules/database/digitalocean"
-  version                      = "1.0.1"
+  version                      = "1.0.7"
   name                         = "org-name"
   environment                  = "dev"
   region                       = "nyc"
@@ -54,8 +54,7 @@ module "mysql" {
 ##------------------------------------------------
 
 module "app" {
-  source  = "terraform-do-modules/app/digitalocean"
-  version = "1.0.2"
+  source = "./../../"
   spec = [{
     name   = "app-name"
     region = "nyc"
@@ -119,7 +118,7 @@ module "app" {
         {
           key   = "DATABASE_PASSWORD",
           type  = "SECRET",
-          value = module.mysql.database_cluster_password,
+          value = module.mysql.database_cluster_default_password[0],
         },
       ]
     }
